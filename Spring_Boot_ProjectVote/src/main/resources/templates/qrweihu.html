@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<HTML xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>发布新投票</title>
+    <link type="text/css" rel="stylesheet" href="/thymeleaf/css/style.css" />
+
+    <script type="text/javascript" src="js/jquery-1.8.0.min.js"></script>
+    <script type="text/javascript">
+        var isIE = !!document.all;
+        function AddOption()
+        {
+            var voteoptions = document.getElementById("voteoptions");
+            var _p = document.createElement("p");
+            var _input = document.createElement("input");
+            _input.type = "text";
+            _input.className = "input-text";
+            _input.setAttribute("name", "content");
+            _p.appendChild(_input);
+            var _a = document.createElement("a");
+            _a.className = "del";
+            _a.setAttribute("href", "javascript:;");
+            if(isIE) {
+                _a.attachEvent("onclick", DelOption);
+            } else {
+                _a.addEventListener("click", DelOption, false);
+            }
+            _a.appendChild(document.createTextNode("删除"));
+            _p.appendChild(_a);
+            voteoptions.appendChild(_p);
+        }
+        //删除选项
+        function DelOption(e)
+        {
+            if(!e) e = window.event;
+            var a = e.srcElement || e.target;
+            var obj = a.parentNode;
+            obj.parentNode.removeChild(obj);
+        }
+
+
+    </script>
+</head>
+<body>
+
+
+
+<div id="header" class="wrap">
+    <img src="/thymeleaf/images/logo.gif" />
+</div>
+<div id="navbar" class="wrap">
+    <div class="profile">
+        您好，<span th:text="${session.user.username}">admin</span>
+        <span class="return"><a href="Subject-list.action">返回列表</a></span>
+        <span class="addnew"><a href="Subject-add.action">添加新投票</a></span>
+        <span class="modify"><a href="Subject-modify.action">维护</a></span>
+        <span class="return"><a href="User-exit.action">注销</a></span>
+    </div>
+    <div class="search">
+        <form method="post" action="Subject-search.action">
+        </form>
+    </div>
+</div>
+
+<div id="voteManage" class="box">
+    <h2>维护选项</h2>
+    <div class="content">
+        <form th:action="@{'/weihuPg/'+${list.get(0).sid}}" method="post" onsubmit="return check();">
+            <dl>
+                <dt>投票内容：</dt>
+                <dd>
+                    <input type="hidden" name="struts.token.name" value="token" />
+                    <input type="hidden" name="token" value="LRW1CCFU94ZLL4LOYW2VZZ624ASK92L1" />
+
+                    <input type="text" class="input-text" name="title" id="title" th:value="${list.get(0).title}" />
+
+
+                </dd>
+                <dt>投票类型：</dt>
+                <dd>
+                    <input type="radio" name="type"  value="1" th:checked="${list.get(0).type == 1}?'checked'" />单选
+                    <input type="radio" name="type"  value="2" th:checked="${list.get(0).type == 2}?'checked'" />多选
+                </dd>
+                <dt>投票选项：</dt>
+
+
+                <dd th:each="p,nsStat:${piao}" id="voteoptions">
+                    <p><input type="text" class="input-text" name="content" th:value="${p.content}"/><A th:href="@{'/shanchu/'+${p.oid}}">删除</A></p>
+                    <p><input type="hidden" class="input-text" name="oid" th:value="${p.oid}"/></p>
+                </dd>
+
+
+                <dt></dt>
+                <dd class="button">
+                    <input type="image" src="/thymeleaf/images/button_submit.gif" />
+                    <a href="javascript:;" onclick="AddOption()">增加选项</a>
+                    <a href="Subject-list.action">取消操作</a>
+                </dd>
+            </dl>
+        </form>
+    </div>
+</div>
+<div id="footer" class="wrap">
+    北大青鸟 &copy; 版权所有
+</div>
+
+</body>
+</html>

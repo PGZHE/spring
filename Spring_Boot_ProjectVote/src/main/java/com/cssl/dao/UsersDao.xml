@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cssl.dao.UsersDao">
+
+    <select id="pDUsers" resultType="String"><!--判断用户登陆,与用户是否存在-->
+        SELECT username FROM users WHERE username=#{username} AND PASSWORD=#{password}
+    </select>
+
+    <insert id="insertUsers" keyColumn="uid" keyProperty="uid"><!--注册用户-->
+        insert into users(username,password) values(#{username},#{password})
+    </insert>
+
+    <select id="pDAdmin" resultType="String">
+        SELECT isAdmin FROM users WHERE username=#{username} AND PASSWORD=#{password}
+    </select>
+
+    <select id="PdUsersPiao" resultType="Users">
+        SELECT * FROM users WHERE username=#{username}
+    </select>
+</mapper>

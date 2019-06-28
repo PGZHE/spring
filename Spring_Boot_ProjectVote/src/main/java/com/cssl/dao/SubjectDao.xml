@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cssl.dao.SubjectDao">
+
+    <select id="selectAll" resultType="Show"><!--查询主页显示内容-->
+        SELECT `subject`.sid,`subject`.title,COUNT(DISTINCT options.oid) AS xuan,COUNT(DISTINCT `item`.iid) AS tou FROM `subject`
+        LEFT JOIN `options` ON `options`.osid=`subject`.sid
+        LEFT JOIN `item` ON `item`.oid=`options`.oid
+        <if test="title!=null and title!=''"><!-- 模糊查询主题名称 -->
+            <bind name="name" value="'%'+title+'%'"/>
+            where `subject`.title LIKE #{name}
+        </if>
+        GROUP BY `subject`.sid
+    </select>
+
+    <select id="tjselectAll" resultType="Show"><!--点击主题显示对应主题内容-->
+        SELECT `subject`.sid,`subject`.title,COUNT(DISTINCT options.oid) AS xuan,COUNT(DISTINCT `item`.iid) AS tou,`type` FROM `subject`
+        LEFT JOIN `options` ON `options`.osid=`subject`.sid
+        LEFT JOIN `item` ON `item`.oid=`options`.oid
+        WHERE `subject`.sid=#{sid}
+        GROUP BY `subject`.sid
+    </select>
+
+    <select id="piaoSelect" resultType="Piao"><!--查询点击主题详细内容的票数-->
+        SELECT `options`.oid,`options`.content,COUNT(item.iid) AS piao FROM `options` LEFT JOIN `item` ON `options`.oid=`item`.oid
+        WHERE `options`.osid=#{sid}
+        GROUP BY `options`.oid,`options`.content
+    </select>
+
+    <select id="sumPiao" resultType="int"><!--查询总票数-->
+        SELECT COUNT(iid) AS size FROM item WHERE sid=#{sid}
+    </select>
+
+    <insert id="insertTitle" keyColumn="sid" keyProperty="sid"><!--新增新闻主题和新闻类型-->
+        INSERT INTO `projectvote`.`subject` (`title`, `type`)VALUES(#{title}, #{type})
+    </insert>
+
+    <insert id="insertContent" keyColumn="oid" keyProperty="oid"><!--新增新闻主题选项-->
+        INSERT INTO `projectvote`.`options` (`content`, `osid`)VALUES(#{content}, #{sid})
+    </insert>
+
+    <select id="chaPiao" resultType="int"><!--查询是否投票-->
+        SELECT piao FROM users WHERE uid=#{uid}
+    </select>
+
+    <insert id="touPiao" keyColumn="uid" keyProperty="uid"><!--投票-->
+        INSERT INTO `projectvote`.`item` (`uid`, `sid`, `oid`) VALUES (#{uid} ,#{sid}, #{oid})
+    </insert>
+
+    <insert id="updateZT" keyColumn="uid" keyProperty="uid">
+        UPDATE `projectvote`.`users` SET `piao` = 1 WHERE `uid` = #{uid}
+    </insert>
+
+    <update id="updateXX" keyColumn="sid" keyProperty="sid">
+        UPDATE `projectvote`.`subject` SET `type` = #{type} where `sid` = #{sid}
+    </update>
+
+    <select id="selectPdTitle" resultType="int">
+        SELECT COUNT(*) FROM `options` WHERE content=#{s}
+    </select>
+
+    <update id="updateTitle" keyColumn="oid" keyProperty="oid">
+        UPDATE `projectvote`.`options` SET  `content` = #{content} where `oid` = #{oid}
+    </update>
+
+    <delete id="deleteTitle">
+        DELETE FROM `projectvote`.`options` WHERE `oid` = #{oid}
+    </delete>
+
+    <insert id="insertXuanXiang" keyColumn="osid" keyProperty="osid">
+        INSERT INTO `projectvote`.`options` (`content`, `osid`) VALUES(#{content}, #{osid})
+    </insert>
+</mapper>

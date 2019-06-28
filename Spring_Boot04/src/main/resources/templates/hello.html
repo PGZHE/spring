@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Hello</title>
+</head>
+<body>
+<table border="1">
+    <tr>
+        <td>ID</td>
+        <td>姓名</td>
+        <td>密码
+        <td>判断</td>
+    </tr>
+    <p th:text="'Hello！, '+${name}+'!'">默认</p>
+    <div th:text="${session.nd.title}" th:style="'width:'+ @{50.0/100*100}+'%;border: solid 1px red; background-color: #cccccc'">div</div>
+    <tr th:each="n,nsStat:${list}" th:class="${nsStat.odd}?'odd'">
+        <td th:text="${n.id}">1</td>
+        <td th:text="${n.name}">PG</td>
+        <td th:text="${n.pwd}">666</td>
+        <td th:text="${n.id==1}?'true':'false'">0</td>
+    </tr>
+
+
+</table>
+</body>
+</html>
